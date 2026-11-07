@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>PAIOS 品味台</title>
+    <link rel="stylesheet" href="./styles.css?v=6" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="brand-block">
+        <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div>
+          <strong>品味台</strong>
+          <small>PAIOS / TASTE &amp; EXPRESSION</small>
+        </div>
+      </div>
+
+      <label class="search-box">
+        <span aria-hidden="true">⌕</span>
+        <input id="searchInput" type="search" placeholder="搜索标题、提示词或标签" autocomplete="off" />
+        <kbd>⌘ K</kbd>
+      </label>
+
+      <nav class="view-tabs" aria-label="主视图">
+        <button class="view-tab is-active" data-view="browse" type="button">漫游</button>
+        <button class="view-tab" data-view="styles" type="button">风格词典 <span id="styleCount">0</span></button>
+        <button class="view-tab" data-view="creative" type="button">创作参考</button>
+        <button class="view-tab" data-view="compose" type="button">组合台</button>
+        <button class="view-tab" data-view="assets" type="button">自有资产</button>
+        <button class="view-tab" data-view="compare" type="button">对照台 <span id="compareCount">0</span></button>
+        <button class="view-tab" data-view="boards" type="button">专题板 <span id="boardCount">1</span></button>
+        <button class="view-tab" data-view="intake" type="button">待整理 <span id="intakeCount">0</span></button>
+      </nav>
+
+      <div class="source-status" title="内置示例库">
+        <span class="status-dot"></span>
+        <span id="sourceCount">载入中</span>
+      </div>
+    </header>
+
+    <main class="app-body">
+      <aside class="filter-rail" id="filterRail">
+        <section class="filter-section">
+          <div class="section-heading">
+            <h2>做什么</h2>
+            <button class="text-button" id="resetFilters" type="button">清除</button>
+          </div>
+          <div class="filter-list" id="occasionFilters"></div>
+        </section>
+
+        <section class="filter-section">
+          <h2>想要的感觉</h2>
+          <div class="filter-list" id="feelingFilters"></div>
+        </section>
+
+        <section class="filter-section type-section">
+          <h2>资源类型</h2>
+          <select id="typeFilter" aria-label="资源类型">
+            <option value="all">全部类型</option>
+          </select>
+        </section>
+
+        <section class="filter-section preference-section">
+          <h2>我的留痕</h2>
+          <div class="filter-list compact" id="preferenceFilters">
+            <button class="filter-chip" data-filter-kind="preference" data-filter-value="liked" type="button"><span>♥</span> 喜欢 <b id="likedCount">0</b></button>
+            <button class="filter-chip" data-filter-kind="preference" data-filter-value="unsure" type="button"><span>?</span> 待定 <b id="unsureCount">0</b></button>
+            <button class="filter-chip" data-filter-kind="preference" data-filter-value="rejected" type="button"><span>×</span> 不适合 <b id="rejectedCount">0</b></button>
+          </div>
+        </section>
+
+        <div class="rail-footer">
+          <span class="status-dot"></span>
+          <span id="saveStatus">状态已保存</span>
+        </div>
+      </aside>
+
+      <section class="content-area">
+        <section class="view-panel" id="creativeView">
+          <div class="content-toolbar"><strong>创作参考</strong><div id="creativeType" class="creative-type-buttons" role="group" aria-label="创作参考类型"><button type="button" data-creative-type="style" aria-pressed="true">画风</button><button type="button" data-creative-type="layout" aria-pressed="false">版式</button><button type="button" data-creative-type="color" aria-pressed="false">配色</button></div><select id="creativePreference" aria-label="参考留痕"><option value="all">全部留痕</option><option value="liked">喜欢</option><option value="unsure">待定</option><option value="rejected">不适合</option></select><span id="creativeCount"></span></div>
+          <div class="gallery-grid creative-grid" id="creativeGrid"></div>
+        </section>
+        <section class="view-panel" id="composeView">
+          <div class="content-toolbar"><strong>创意组合</strong><div class="toolbar-actions"><button class="secondary-button" id="exploreComposition" type="button">探索组合</button><button class="secondary-button" id="saveComposition" type="button">保存组合</button><button class="primary-button" id="exportComposition" type="button">导出任务</button></div></div>
+          <div class="composer-layout">
+            <form id="composerForm" class="composer-form">
+              <label>用途<select name="purpose"><option>文章封面</option><option>知识图解</option><option>社媒图文</option><option>角色设定</option><option>短视频</option></select></label>
+              <label>主题<textarea name="theme" rows="3" maxlength="3000"></textarea></label>
+              <div class="composer-pair"><label>画幅<select name="ratio"><option>3:4</option><option>16:9</option><option>9:16</option><option>1:1</option><option>4:3</option><option>2.35:1</option></select></label><label>情绪<input name="mood" maxlength="150" /></label></div>
+              <label>留白<select name="whitespace"><option>正常</option><option>适中</option><option>多</option></select></label>
+              <div id="compositionSelections"></div>
+              <details><summary>视频与补充要求</summary><div class="composer-pair"><label>时长（秒）<input name="duration" type="number" min="1" max="600" /></label><label>声音<select name="voice"><option>暂不配音</option><option>需要配音</option></select></label></div><label>字幕<select name="subtitles"><option>需要字幕</option><option>无需字幕</option></select></label><label>其他要求<textarea name="note" rows="3" maxlength="3000"></textarea></label></details>
+              <label>已保存组合<select id="savedComposition"><option value="">选择组合</option></select></label>
+            </form>
+            <section class="composition-output"><div class="detail-section-heading"><h2>任务预览</h2><button class="text-button" id="copyComposition" type="button">复制</button></div><pre id="compositionPreview"></pre><p id="compositionExportPath" role="status"></p></section>
+          </div>
+        </section>
+        <section class="view-panel" id="assetsView">
+          <div class="content-toolbar"><strong>自有资产</strong><select id="assetType" aria-label="资产类型"><option value="角色">角色</option><option value="道具">道具</option><option value="场景">场景</option><option value="产品与品牌">产品与品牌</option></select></div>
+          <form id="assetForm" class="asset-form"><label>名称<input id="assetName" required maxlength="120" /></label><label>关键特征<input id="assetTraits" maxlength="1500" /></label><label>来源<input id="assetSource" maxlength="200" placeholder="本人创作 / 来源链接" /></label><label>版本<input id="assetVersion" maxlength="40" value="v1" /></label><label>基准图<input id="assetImage" required type="file" accept="image/png,image/jpeg,image/webp" /></label><button class="primary-button" type="submit">保存资产</button></form>
+          <div class="gallery-grid" id="assetGrid"></div>
+        </section>
+        <section class="view-panel is-active" id="browseView">
+          <div class="content-toolbar">
+            <div>
+              <strong id="resultTitle">全部灵感</strong>
+              <span id="resultCount">0 项</span>
+            </div>
+            <div class="toolbar-actions">
+              <label class="board-picker">
+                放入
+                <select id="activeBoardSelect" aria-label="当前专题板"></select>
+              </label>
+              <button class="secondary-button" id="newBoardButton" type="button">＋ 新建专题板</button>
+            </div>
+          </div>
+          <div class="gallery-grid" id="galleryGrid" aria-live="polite"></div>
+        </section>
+
+        <section class="view-panel" id="boardsView">
+          <div class="content-toolbar">
+            <div>
+              <strong>专题板</strong>
+              <span id="activeBoardMeta">0 项</span>
+            </div>
+            <div class="toolbar-actions">
+              <select id="boardViewSelect" aria-label="查看专题板"></select>
+              <button class="secondary-button" id="renameBoardButton" type="button">重命名</button>
+              <button class="primary-button" id="openExportButton" type="button">导出给大G</button>
+            </div>
+          </div>
+          <div class="board-empty" id="boardEmpty" hidden>
+            <strong>这个专题板还是空的</strong>
+            <button class="primary-button" data-go-view="browse" type="button">去漫游</button>
+          </div>
+          <div class="gallery-grid" id="boardGrid"></div>
+        </section>
+
+        <section class="view-panel" id="stylesView">
+          <div class="content-toolbar style-toolbar">
+            <div>
+              <strong>风格语言索引</strong>
+              <span>样卡用于辨认和比较，收录不等于喜欢</span>
+            </div>
+            <label class="board-picker">
+              放入
+              <select id="styleBoardSelect" aria-label="风格词典当前专题板"></select>
+            </label>
+          </div>
+          <div class="style-group-filters" id="styleGroupFilters" aria-label="风格语言分组"></div>
+          <div class="gallery-grid style-grid" id="styleGrid" aria-live="polite"></div>
+        </section>
+
+        <section class="view-panel" id="compareView">
+          <div class="content-toolbar">
+            <div>
+              <strong>风格对照台</strong>
+              <span id="compareMeta">从风格词典选择 2–4 项并排看</span>
+            </div>
+            <div class="toolbar-actions">
+              <button class="secondary-button" id="clearCompareButton" type="button">清空</button>
+              <button class="primary-button" id="compareToBoardButton" type="button">加入当前专题板</button>
+            </div>
+          </div>
+          <div class="compare-empty" id="compareEmpty">
+            <strong>还没有可对照的风格</strong>
+            <span>在风格词典的卡片上点击 ⇄，最多选 4 项。</span>
+            <button class="primary-button" data-go-view="styles" type="button">去选风格</button>
+          </div>
+          <div class="compare-grid" id="compareGrid"></div>
+        </section>
+
+        <section class="view-panel" id="intakeView">
+          <div class="intake-layout">
+            <section class="intake-form-section">
+              <div class="content-toolbar plain">
+                <div>
+                  <strong>待整理入口</strong>
+                  <span>尚未进入正式资源库</span>
+                </div>
+              </div>
+              <form id="linkIntakeForm" class="intake-form">
+                <label>
+                  <span>网页链接</span>
+                  <input id="intakeUrl" type="url" placeholder="https://…" required />
+                </label>
+                <label>
+                  <span>一句话记下它</span>
+                  <input id="intakeTitle" type="text" maxlength="160" placeholder="为什么值得留下" />
+                </label>
+                <button class="primary-button" type="submit">加入待整理</button>
+              </form>
+
+              <label class="upload-zone" id="uploadZone">
+                <input id="uploadInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" />
+                <span class="upload-icon">＋</span>
+                <strong>放入一张本机图片</strong>
+                <small>PNG、JPEG、WebP 或 GIF，单张不超过 24 MB</small>
+              </label>
+            </section>
+            <section class="intake-list-section">
+              <div class="intake-list" id="intakeList"></div>
+            </section>
+          </div>
+        </section>
+      </section>
+
+      <aside class="detail-panel" id="detailPanel" aria-label="案例详情">
+        <div class="detail-empty" id="detailEmpty">
+          <div class="empty-swatch"><span></span><span></span><span></span></div>
+          <strong>选择一项查看</strong>
+          <small>案例详情会留在这里</small>
+        </div>
+        <div class="detail-content" id="detailContent" hidden>
+          <div class="detail-image-wrap">
+            <img id="detailImage" alt="" role="button" tabindex="0" title="放大查看图片" aria-label="放大查看图片" />
+            <p class="detail-image-credit" id="detailImageCredit" hidden></p>
+            <button class="icon-button detail-close" id="closeDetail" type="button" title="关闭详情">×</button>
+          </div>
+          <div class="detail-scroll">
+            <p class="eyebrow" id="detailCategory"></p>
+            <h2 id="detailTitle"></h2>
+            <div class="tag-row" id="detailTags"></div>
+
+            <div class="style-guidance" id="styleGuidance" hidden>
+              <p id="detailDescription"></p>
+              <dl>
+                <div><dt>适合</dt><dd id="detailUseWhen"></dd></div>
+                <div><dt>慎用</dt><dd id="detailAvoidWhen"></dd></div>
+              </dl>
+            </div>
+
+            <div class="preference-actions" aria-label="个人判断">
+              <button data-preference="liked" type="button"><span>♥</span> 喜欢</button>
+              <button data-preference="unsure" type="button"><span>?</span> 待定</button>
+              <button data-preference="rejected" type="button"><span>×</span> 不适合</button>
+            </div>
+
+            <label class="note-field">
+              <span>我的批注</span>
+              <textarea id="detailNote" rows="3" maxlength="2000" placeholder="记下具体喜欢什么，或这次想怎么用"></textarea>
+            </label>
+
+            <div class="detail-section">
+              <div class="detail-section-heading">
+                <h3>参考提示词</h3>
+                <button class="text-button" id="copyPromptButton" type="button">复制</button>
+              </div>
+              <p class="prompt-text" id="detailPrompt"></p>
+            </div>
+
+            <div class="detail-actions">
+              <button class="primary-button" id="addToBoardButton" type="button">加入当前专题板</button>
+              <button class="secondary-button" id="useInComposition" type="button" hidden>用于组合</button>
+              <a class="secondary-button as-link" id="sourceLink" href="#" target="_blank" rel="noreferrer">查看来源</a>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <dialog id="exportDialog" class="dialog-panel">
+      <form method="dialog">
+        <header>
+          <div>
+            <small>任务包</small>
+            <h2>交给大G</h2>
+          </div>
+          <button class="icon-button" value="cancel" title="关闭" type="submit">×</button>
+        </header>
+        <label>
+          <span>任务名称</span>
+          <input id="exportTitle" type="text" maxlength="100" />
+        </label>
+        <label>
+          <span>这次想做什么</span>
+          <textarea id="exportNote" rows="6" maxlength="5000" placeholder="场合、受众、尺寸、内容、希望保留的感觉……"></textarea>
+        </label>
+        <footer>
+          <button class="secondary-button" value="cancel" type="submit">取消</button>
+          <button class="primary-button" id="exportButton" value="default" type="button">生成 Markdown</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog id="imageViewer" aria-labelledby="viewerTitle">
+      <header class="viewer-toolbar"><strong id="viewerTitle"></strong><div class="viewer-controls"><button id="viewerZoomOut" type="button" title="缩小" aria-label="缩小">−</button><output id="viewerScale" aria-live="polite">100%</output><button id="viewerZoomIn" type="button" title="放大" aria-label="放大">＋</button><button id="viewerFit" type="button" title="适应窗口">适应</button><button id="viewerOriginal" type="button" title="原始尺寸">1:1</button><button id="viewerClose" type="button" title="关闭大图" aria-label="关闭大图">×</button></div></header>
+      <div id="viewerStage"><img id="viewerImage" alt="" draggable="false" /></div>
+    </dialog>
+    <div class="toast" id="toast" role="status"></div>
+    <script src="./app.js?v=8" defer></script>
+    <script src="./creative.js?v=1" defer></script>
+    <script src="./image-viewer.js?v=1" defer></script>
+  </body>
+</html>
